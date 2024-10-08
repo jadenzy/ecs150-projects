@@ -4,6 +4,9 @@
         "*.cpp ": "cpp",
         "istream": "cpp",
         "iostream": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "map": "cpp",
+        "vector": "cpp",
+        "string": "cpp"
     }
 }
