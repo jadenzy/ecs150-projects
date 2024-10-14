@@ -9,8 +9,8 @@
 #include <sstream> 
 #include <cstdlib>
 #include <vector>  
-
-
+#include <sys/wait.h>
+#include <algorithm>
 
 using namespace std; 
 
@@ -18,8 +18,8 @@ char error_message[30] = "An error has occurred\n";
 vector<char*> paths;
 
 string remove_whitespace(string &str) {
-    int first = str.find_first_not_of(" \t");
-    int last = str.find_last_not_of(" \t");
+    size_t first = str.find_first_not_of(" \t");
+    size_t last = str.find_last_not_of(" \t");
     if (first == string::npos) return ""; 
     return str.substr(first, last - first + 1);
 }
@@ -134,6 +134,7 @@ void excu(vector<string> commands) {
                 } else {
                     args_list.push_back(arg);  
                 }
+
             }
 
             string full_path;
@@ -143,6 +144,7 @@ void excu(vector<string> commands) {
                 if (full_path.back() != '/') {
                     full_path += '/';
                 }
+                
                 full_path += first_arg;
 
                 if (access(full_path.c_str(), X_OK) == 0) {
@@ -157,8 +159,8 @@ void excu(vector<string> commands) {
             }
             
             args.push_back(strdup(full_path.c_str()));
-            for (int i = 0; i < args_list.size(); i++) {
-                
+            args.push_back(strdup(first_arg.c_str()));
+            for (size_t i = 0; i < args_list.size(); i++) {
                 args.push_back(strdup(args_list[i].c_str()));  
             }
             args.push_back(nullptr);
@@ -172,7 +174,7 @@ void excu(vector<string> commands) {
                         write(STDERR_FILENO, error_message, strlen(error_message)); 
                     close(fd);
                 }
-                if (execv(args[0], args.data()) == -1) 
+                if (execv(args[0], args.data() + 1) == -1) 
                     write(STDERR_FILENO, error_message, strlen(error_message)); 
                 exit(1);
             } else if (pid > 0) {
@@ -190,6 +192,11 @@ void excu(vector<string> commands) {
 }
 
 int main(int argc, char *argv[]){
+    vector<char*> args;
+    // const char* arr[] = {"ls", "/no/such/file", NULL};
+    // if (execv("/bin/ls", (char* const*)arr) == -1) 
+    //     write(STDERR_FILENO, error_message, strlen(error_message)); 
+
     char default_path[100] = "/bin"; 
     paths.push_back(default_path);
     
@@ -205,6 +212,7 @@ int main(int argc, char *argv[]){
             vector<string> commands = split(user_input);
             excu(commands);
         }
+        return 0; 
     }else if(argc == 2){
         int fileDescriptor = 0;
         int ret; 
