@@ -169,7 +169,7 @@ void excu(vector<string> commands) {
             
             if (pid == 0) {
                 if (redirect) {
-                    int fd = open(output_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+                    int fd = open(output_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 6044, S_IRWXU);
                     if (dup2(fd, STDOUT_FILENO) == -1 || fd == -1)
                         write(STDERR_FILENO, error_message, strlen(error_message)); 
                     close(fd);
@@ -193,9 +193,6 @@ void excu(vector<string> commands) {
 
 int main(int argc, char *argv[]){
     vector<char*> args;
-    // const char* arr[] = {"ls", "/no/such/file", NULL};
-    // if (execv("/bin/ls", (char* const*)arr) == -1) 
-    //     write(STDERR_FILENO, error_message, strlen(error_message)); 
 
     char default_path[100] = "/bin"; 
     paths.push_back(default_path);
